@@ -8,6 +8,7 @@ import (
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/validator"
 	"github.com/roo10ium/sso-protos/gen/go/pbsso"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -33,16 +34,23 @@ func NewApp(log *slog.Logger, sso ssoService, host string, port int) *app {
 	}
 
 	recoveryOpts := []recovery.Option{
-		recovery.WithRecoveryHandler(func(p interface{}) (err error) {
+		recovery.WithRecoveryHandler(func(p any) (err error) {
 			log.Error("Recovered from panic", slog.Any("panic", p))
 
 			return status.Errorf(codes.Internal, "internal error")
 		}),
 	}
 
+	validatorOpts := []validator.Option{
+		validator.WithOnValidationErrCallback(func(ctx context.Context, err error) {
+			log.Error("Validation error", slog.Any("error", err))
+		}),
+	}
+
 	s := grpc.NewServer(grpc.ChainUnaryInterceptor(
 		recovery.UnaryServerInterceptor(recoveryOpts...),
 		logging.UnaryServerInterceptor(InterceptorLogger(log), loggingOpts...),
+		validator.UnaryServerInterceptor(validatorOpts...),
 	))
 
 	pbsso.RegisterSSOServer(s, &gRPCServer{sso: sso})
@@ -63,7 +71,7 @@ func (a app) MustRun() {
 }
 
 func (a app) Run() error {
-	op := fmt.Sprintf("%s.Run", prefix)
+	const op = prefix + ".Run"
 	l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", a.host, a.port))
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)

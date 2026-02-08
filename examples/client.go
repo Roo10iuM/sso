@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/go-faker/faker/v4"
 
@@ -24,7 +25,7 @@ func main() {
 
 	conn, err := grpc.NewClient(serverAddr, opts...)
 	if err != nil {
-		log.Error(fmt.Sprintf("fatal: %v", err))
+		log.Error("NewClient error", slog.Any("error", err))
 		return
 	}
 	defer conn.Close()
@@ -36,5 +37,9 @@ func main() {
 	mail := faker.Email()
 	password := faker.Password()
 	log.Info("start register", "user", []string{username, mail, password})
-	client.Register(ctx, &pbsso.RegisterRequest{Username: username, Email: &mail, Password: password})
+	res, err := client.Register(ctx, &pbsso.RegisterRequest{Username: username, Email: &mail, Password: password})
+	if err != nil {
+		log.Error("Request error", slog.Any("error", err))
+	}
+	log.Info("Register end", slog.Any("res", res))
 }
