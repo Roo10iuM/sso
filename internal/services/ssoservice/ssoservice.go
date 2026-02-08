@@ -1,4 +1,4 @@
-package usecases
+package ssoservice
 
 import (
 	"context"
@@ -11,8 +11,8 @@ type sso struct {
 	log *slog.Logger
 }
 
-func NewSso(log slog.Logger) sso {
-	return sso{log: &log}
+func NewSSO(log *slog.Logger) *sso {
+	return &sso{log: log}
 }
 
 func (s *sso) Login(
@@ -22,7 +22,7 @@ func (s *sso) Login(
 	appUUID string,
 ) (token string, err error) {
 	// TODO
-	s.log.Info("start login")
+	s.log.Info("attempting to login user")
 	return login, nil
 }
 
@@ -33,6 +33,6 @@ func (s *sso) RegisterNewUser(
 	password string,
 ) (userUUID string, err error) {
 	// TODO
-	s.log.Info("start register")
+	s.log.Info("registering user")
 	return uuid.New().String(), nil
 }

@@ -3,9 +3,11 @@ module github.com/roo10ium/sso
 go 1.25.6
 
 require (
+	github.com/go-faker/faker/v4 v4.7.0
 	github.com/google/uuid v1.6.0
+	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3
 	github.com/ilyakaznacheev/cleanenv v1.5.0
-	github.com/roo10ium/sso-protos v0.0.0-20260201203247-335bf563440d
+	github.com/roo10ium/sso-protos v0.0.0-20260208121204-ab7ca7df4138
 	google.golang.org/grpc v1.78.0
 )
 

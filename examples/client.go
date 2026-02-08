@@ -1,0 +1,40 @@
+package main
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/go-faker/faker/v4"
+
+	"github.com/roo10ium/sso-protos/gen/go/pbsso"
+	"github.com/roo10ium/sso/internal/util/config"
+	"github.com/roo10ium/sso/internal/util/log"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+)
+
+func main() {
+	cfg := config.MustLoad()
+	log := log.SetupLogger("local")
+
+	serverAddr := fmt.Sprintf("%s:%d", cfg.GRPC.Host, cfg.GRPC.Port)
+
+	var opts []grpc.DialOption
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	conn, err := grpc.NewClient(serverAddr, opts...)
+	if err != nil {
+		log.Error(fmt.Sprintf("fatal: %v", err))
+		return
+	}
+	defer conn.Close()
+
+	client := pbsso.NewSSOClient(conn)
+
+	ctx := context.Background()
+	username := faker.FirstNameMale()
+	mail := faker.Email()
+	password := faker.Password()
+	log.Info("start register", "user", []string{username, mail, password})
+	client.Register(ctx, &pbsso.RegisterRequest{Username: username, Email: &mail, Password: password})
+}
