@@ -64,13 +64,13 @@ func InterceptorLogger(l *slog.Logger) logging.Logger {
 	})
 }
 
-func (a app) MustRun() {
+func (a *app) MustRun() {
 	if err := a.Run(); err != nil {
 		panic(err)
 	}
 }
 
-func (a app) Run() error {
+func (a *app) Run() error {
 	const op = prefix + ".Run"
 	l, err := net.Listen("tcp", fmt.Sprintf("%s:%d", a.host, a.port))
 	if err != nil {
@@ -84,4 +84,15 @@ func (a app) Run() error {
 	}
 
 	return nil
+}
+
+func (a *app) Stop() {
+	const op = prefix + ".Stop"
+
+	a.log.With(slog.String("op", op)).Info("stopping gRPC server",
+		slog.String("host", a.host),
+		slog.Int("port", a.port),
+	)
+
+	a.s.GracefulStop()
 }
