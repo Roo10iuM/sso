@@ -1,0 +1,4 @@
+env: "local"
+grpc:
+  host: "localhost"
+  port: 8040
