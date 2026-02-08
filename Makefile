@@ -1,7 +1,7 @@
 .PHONY: run client
 
 run:
-	go run cmd/sso --config=./config/config.yaml
+	go run ./cmd/sso --config=./config/config.yaml
 
 client:
 	go run examples/go/client.go --config=./config/config.yaml

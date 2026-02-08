@@ -38,6 +38,8 @@ func (s *gRPCServer) Login(
 	switch in.Login.(type) {
 	case *pbsso.LoginRequest_Email:
 		login = in.GetEmail()
+		// TODO
+		return nil, status.Error(codes.InvalidArgument, "login by email is not implemented")
 	case *pbsso.LoginRequest_Username:
 		login = in.GetUsername()
 	default:

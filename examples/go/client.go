@@ -21,6 +21,7 @@ func main() {
 	serverAddr := fmt.Sprintf("%s:%d", cfg.GRPC.Host, cfg.GRPC.Port)
 
 	var opts []grpc.DialOption
+	// TODO secure
 	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	conn, err := grpc.NewClient(serverAddr, opts...)
