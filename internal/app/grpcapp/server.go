@@ -45,10 +45,13 @@ func (s *gRPCServer) Login(
 	default:
 		return nil, status.Error(codes.InvalidArgument, "login is required")
 	}
+
 	token, err := s.sso.Login(ctx, login, in.Password, in.AppUuid)
 	if err != nil {
+		// TODO
 		return nil, err
 	}
+
 	return &pbsso.LoginResponse{Token: token}, nil
 }
 
