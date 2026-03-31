@@ -1,0 +1,5 @@
+env: "local"
+storage_path: "./storage/sso.db"
+grpc:
+  host: "localhost"
+  port: 8040
